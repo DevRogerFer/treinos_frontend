@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
-  activeTab?: "home" | "calendar" | "stats";
+  activeTab?: "home" | "calendar" | "stats" | "profile";
   calendarHref?: string;
 }
 
@@ -22,6 +22,7 @@ export const BottomNav = ({
   const isHome = activeTab === "home";
   const isCalendar = activeTab === "calendar";
   const isStats = activeTab === "stats";
+  const isProfile = activeTab === "profile";
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background">
@@ -68,9 +69,15 @@ export const BottomNav = ({
         >
           <BarChart3 className={cn("size-6", isStats && "fill-foreground")} />
         </Link>
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
-          <User className="size-6" />
-        </Button>
+        <Link
+          href="/profile"
+          className={cn(
+            "p-2",
+            isProfile ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
+          <User className={cn("size-6", isProfile && "fill-foreground")} />
+        </Link>
       </div>
     </nav>
   );
