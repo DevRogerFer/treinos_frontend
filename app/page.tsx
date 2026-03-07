@@ -94,14 +94,20 @@ const Home = async () => {
             </Button>
           </div>
           <Link
-            href={`/workout-plans/${activeWorkoutPlanId}/workout-days/${todayWorkoutDay.id}`}
+            href={`/workout-plans/${activeWorkoutPlanId}/days/${todayWorkoutDay.id}`}
           >
             <WorkoutDayCard workoutDay={todayWorkoutDay} />
           </Link>
         </section>
       )}
 
-      <BottomNav />
+      <BottomNav
+        calendarHref={
+          todayWorkoutDay
+            ? `/workout-plans/${activeWorkoutPlanId}/days/${todayWorkoutDay.id}`
+            : undefined
+        }
+      />
     </div>
   );
 };
