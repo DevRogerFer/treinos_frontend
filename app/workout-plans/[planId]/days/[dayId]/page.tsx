@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ArrowLeft, Clock, Dumbbell } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, Dumbbell } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +15,16 @@ import { Button } from "@/components/ui/button";
 import { WorkoutSessionButton } from "./_components/workout-session-button";
 
 const WEEKDAY_LABELS: Record<string, string> = {
+  SUNDAY: "Domingo",
+  MONDAY: "Segunda",
+  TUESDAY: "Terça",
+  WEDNESDAY: "Quarta",
+  THURSDAY: "Quinta",
+  FRIDAY: "Sexta",
+  SATURDAY: "Sábado",
+};
+
+const WEEKDAY_BADGE_LABELS: Record<string, string> = {
   SUNDAY: "DOMINGO",
   MONDAY: "SEGUNDA",
   TUESDAY: "TERÇA",
@@ -61,6 +71,8 @@ const WorkoutDayPage = async ({ params }: WorkoutDayPageProps) => {
   );
   const weekDayLabel =
     WEEKDAY_LABELS[workoutDay.weekDay] ?? workoutDay.weekDay;
+  const weekDayBadgeLabel =
+    WEEKDAY_BADGE_LABELS[workoutDay.weekDay] ?? workoutDay.weekDay;
   const sortedExercises = [...workoutDay.exercises].sort(
     (a, b) => a.order - b.order,
   );
@@ -69,6 +81,7 @@ const WorkoutDayPage = async ({ params }: WorkoutDayPageProps) => {
     (s) => s.startedAt && !s.completedAt,
   );
   const completedSession = workoutDay.sessions.find((s) => s.completedAt);
+  const hasSession = !!inProgressSession || !!completedSession;
 
   const homeResponse = await getHomeData(dayjs().format("YYYY-MM-DD"), {
     cache: "no-store",
@@ -80,70 +93,83 @@ const WorkoutDayPage = async ({ params }: WorkoutDayPageProps) => {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background pb-24">
-      <section className="relative h-52 overflow-hidden">
-        {workoutDay.coverImageUrl ? (
-          <Image
-            src={workoutDay.coverImageUrl}
-            alt={workoutDay.name}
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
-        ) : (
-          <div className="absolute inset-0 bg-linear-to-br from-primary/80 to-primary/30" />
-        )}
-        <div className="absolute inset-0 bg-linear-to-t from-background via-background/60 to-transparent" />
+      <header className="flex items-center gap-3 px-5 pt-14 pb-4">
+        <Link href={`/workout-plans/${planId}`}>
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <ArrowLeft className="size-5" />
+          </Button>
+        </Link>
+        <h1 className="flex-1 text-center text-lg font-bold">
+          {weekDayLabel}
+        </h1>
+        <div className="size-10" />
+      </header>
 
-        <div className="relative z-10 flex h-full flex-col justify-between">
-          <div className="p-5">
-            <Link href="/">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-muted/40 backdrop-blur-sm"
-              >
-                <ArrowLeft className="size-5" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="space-y-2 px-5 pb-5">
-            <Badge className="gap-1.5 border-none bg-muted/60 text-foreground backdrop-blur-sm">
-              {weekDayLabel}
-            </Badge>
-            <h1 className="text-2xl font-bold">{workoutDay.name}</h1>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Clock className="size-3.5" />
-                {durationInMinutes}min
-              </span>
-              <span className="flex items-center gap-1">
-                <Dumbbell className="size-3.5" />
-                {workoutDay.exercises.length} exercícios
-              </span>
+      <section className="px-5">
+        <div className="relative h-52 overflow-hidden rounded-2xl">
+          {workoutDay.coverImageUrl ? (
+            <Image
+              src={workoutDay.coverImageUrl}
+              alt={workoutDay.name}
+              fill
+              className="object-cover"
+              priority
+              unoptimized
+            />
+          ) : (
+            <div className="absolute inset-0 bg-linear-to-br from-primary/80 to-primary/30" />
+          )}
+          <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/20 to-transparent" />
+          <div className="relative z-10 flex h-full flex-col justify-between p-4">
+            <div>
+              <Badge className="gap-1.5 border-none bg-muted/60 text-foreground backdrop-blur-sm">
+                <CalendarDays className="size-3" />
+                {weekDayBadgeLabel}
+              </Badge>
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <h2 className="text-xl font-bold">{workoutDay.name}</h2>
+                <div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Clock className="size-3.5" />
+                    {durationInMinutes}min
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Dumbbell className="size-3.5" />
+                    {workoutDay.exercises.length} exercícios
+                  </span>
+                </div>
+              </div>
+              {!hasSession && (
+                <WorkoutSessionButton
+                  planId={planId}
+                  dayId={dayId}
+                  variant="start"
+                />
+              )}
             </div>
           </div>
         </div>
       </section>
 
       <section className="mt-4 space-y-3 px-5">
-        <h2 className="text-lg font-semibold">Exercícios</h2>
-        <div className="space-y-3">
-          {sortedExercises.map((exercise) => (
-            <ExerciseCard key={exercise.id} exercise={exercise} />
-          ))}
-        </div>
+        {sortedExercises.map((exercise) => (
+          <ExerciseCard key={exercise.id} exercise={exercise} />
+        ))}
       </section>
 
-      <section className="mt-6 px-5">
-        <WorkoutSessionButton
-          planId={planId}
-          dayId={dayId}
-          sessionId={inProgressSession?.id}
-          isCompleted={!!completedSession}
-        />
-      </section>
+      {hasSession && (
+        <section className="mt-6 px-5">
+          <WorkoutSessionButton
+            planId={planId}
+            dayId={dayId}
+            sessionId={inProgressSession?.id}
+            isCompleted={!!completedSession}
+            variant="full"
+          />
+        </section>
+      )}
 
       <BottomNav activeTab="calendar" calendarHref={calendarHref} />
     </div>

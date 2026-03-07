@@ -12,7 +12,8 @@ interface WorkoutSessionButtonProps {
   planId: string;
   dayId: string;
   sessionId?: string;
-  isCompleted: boolean;
+  isCompleted?: boolean;
+  variant?: "start" | "full";
 }
 
 export const WorkoutSessionButton = ({
@@ -20,8 +21,28 @@ export const WorkoutSessionButton = ({
   dayId,
   sessionId,
   isCompleted,
+  variant = "full",
 }: WorkoutSessionButtonProps) => {
   const [isPending, startTransition] = useTransition();
+
+  if (variant === "start") {
+    const handleStart = () => {
+      startTransition(async () => {
+        await startWorkoutSessionAction(planId, dayId);
+      });
+    };
+
+    return (
+      <Button
+        size="sm"
+        onClick={handleStart}
+        disabled={isPending}
+      >
+        <Play className="size-4" />
+        {isPending ? "Iniciando..." : "Iniciar Treino"}
+      </Button>
+    );
+  }
 
   if (isCompleted) {
     return (

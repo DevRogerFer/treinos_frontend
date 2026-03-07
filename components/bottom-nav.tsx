@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface BottomNavProps {
-  activeTab?: "home" | "calendar";
+  activeTab?: "home" | "calendar" | "stats";
   calendarHref?: string;
 }
 
@@ -21,6 +21,7 @@ export const BottomNav = ({
 }: BottomNavProps) => {
   const isHome = activeTab === "home";
   const isCalendar = activeTab === "calendar";
+  const isStats = activeTab === "stats";
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background">
@@ -58,9 +59,15 @@ export const BottomNav = ({
         <Button className="size-14 rounded-full shadow-lg">
           <Sparkles className="size-7" />
         </Button>
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
-          <BarChart3 className="size-6" />
-        </Button>
+        <Link
+          href="/stats"
+          className={cn(
+            "p-2",
+            isStats ? "text-foreground" : "text-muted-foreground",
+          )}
+        >
+          <BarChart3 className={cn("size-6", isStats && "fill-foreground")} />
+        </Link>
         <Button variant="ghost" size="icon" className="text-muted-foreground">
           <User className="size-6" />
         </Button>
