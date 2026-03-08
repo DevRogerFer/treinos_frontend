@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BarChart3,
   CalendarDays,
@@ -6,6 +8,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +22,10 @@ export const BottomNav = ({
   activeTab = "home",
   calendarHref,
 }: BottomNavProps) => {
+  const [, setIsOpen] = useQueryState(
+    "chat_open",
+    parseAsBoolean.withDefault(false),
+  );
   const isHome = activeTab === "home";
   const isCalendar = activeTab === "calendar";
   const isStats = activeTab === "stats";
@@ -57,7 +64,10 @@ export const BottomNav = ({
             <CalendarDays className="size-6" />
           </Button>
         )}
-        <Button className="size-14 rounded-full shadow-lg">
+        <Button
+          className="size-14 rounded-full shadow-lg"
+          onClick={() => setIsOpen(true)}
+        >
           <Sparkles className="size-7" />
         </Button>
         <Link
