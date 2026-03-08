@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 import { getHomeData, getStats } from "@/app/_lib/api/fetch-generated";
 import { authClient } from "@/app/_lib/auth-client";
+import { checkOnboarding } from "@/app/_lib/check-onboarding";
 import { BottomNav } from "@/components/bottom-nav";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +21,8 @@ const StatsPage = async () => {
   });
 
   if (!session.data?.user) redirect("/auth");
+
+  await checkOnboarding();
 
   const to = dayjs().format("YYYY-MM-DD");
   const from = dayjs().subtract(2, "month").startOf("month").format("YYYY-MM-DD");

@@ -9,6 +9,7 @@ import {
   listWorkoutPlans,
 } from "@/app/_lib/api/fetch-generated";
 import { authClient } from "@/app/_lib/auth-client";
+import { checkOnboarding } from "@/app/_lib/check-onboarding";
 import { BottomNav } from "@/components/bottom-nav";
 import {
   Avatar,
@@ -26,6 +27,8 @@ const ProfilePage = async () => {
   });
 
   if (!session.data?.user) redirect("/auth");
+
+  await checkOnboarding();
 
   const user = session.data.user;
 

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 import { getHomeData } from "@/app/_lib/api/fetch-generated";
 import { authClient } from "@/app/_lib/auth-client";
+import { checkOnboarding } from "@/app/_lib/check-onboarding";
 import { BottomNav } from "@/components/bottom-nav";
 import { ConsistencyTracker } from "@/components/consistency-tracker";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,8 @@ const Home = async () => {
   });
 
   if (!session.data?.user) redirect("/auth");
+
+  await checkOnboarding();
 
   const response = await getHomeData(dayjs().format("YYYY-MM-DD"), {
     cache: "no-store",

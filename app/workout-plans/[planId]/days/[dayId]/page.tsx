@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 
 import { getHomeData, getWorkoutDay } from "@/app/_lib/api/fetch-generated";
 import { authClient } from "@/app/_lib/auth-client";
+import { checkOnboarding } from "@/app/_lib/check-onboarding";
 import { BottomNav } from "@/components/bottom-nav";
 import { ExerciseCard } from "@/components/exercise-card";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,8 @@ const WorkoutDayPage = async ({ params }: WorkoutDayPageProps) => {
   });
 
   if (!session.data?.user) redirect("/auth");
+
+  await checkOnboarding();
 
   const response = await getWorkoutDay(planId, dayId, {
     cache: "no-store",

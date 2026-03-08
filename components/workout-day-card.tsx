@@ -1,5 +1,8 @@
+"use client";
+
 import { CalendarDays, Clock, Dumbbell } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 
@@ -24,20 +27,23 @@ interface WorkoutDayCardProps {
 }
 
 export const WorkoutDayCard = ({ workoutDay }: WorkoutDayCardProps) => {
+  const [imageError, setImageError] = useState(false);
   const durationInMinutes = Math.round(
     workoutDay.estimatedDurationInSeconds / 60,
   );
   const weekDayLabel = WEEKDAY_LABELS[workoutDay.weekDay] ?? workoutDay.weekDay;
+  const showImage = workoutDay.coverImageUrl && !imageError;
 
   return (
     <div className="relative h-52 overflow-hidden rounded-2xl">
-      {workoutDay.coverImageUrl ? (
+      {showImage ? (
         <Image
-          src={workoutDay.coverImageUrl}
+          src={workoutDay.coverImageUrl!}
           alt={workoutDay.name}
           fill
           className="object-cover"
           unoptimized
+          onError={() => setImageError(true)}
         />
       ) : (
         <div className="absolute inset-0 bg-linear-to-br from-primary/80 to-primary/30" />

@@ -10,6 +10,7 @@ import {
   getWorkoutPlan,
 } from "@/app/_lib/api/fetch-generated";
 import { authClient } from "@/app/_lib/auth-client";
+import { checkOnboarding } from "@/app/_lib/check-onboarding";
 import { BottomNav } from "@/components/bottom-nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,8 @@ const WorkoutPlanPage = async ({ params }: WorkoutPlanPageProps) => {
   });
 
   if (!session.data?.user) redirect("/auth");
+
+  await checkOnboarding();
 
   const response = await getWorkoutPlan(planId, {
     cache: "no-store",
